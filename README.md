@@ -1,38 +1,3 @@
-# Sonic
-Sonic: Shifting Focus to Global Audio Perception in Portrait Animation
-
-
-<a href='https://jixiaozhong.github.io/Sonic/'><img src='https://img.shields.io/badge/Project-Page-Green'></a>
-<a href="http://demo.sonic.jixiaozhong.online/" style="margin: 0 2px;">
-    <img src='https://img.shields.io/badge/Demo-Gradio-gold?style=flat&logo=Gradio&logoColor=red' alt='Demo'>
-  </a>
-<a href='https://arxiv.org/pdf/2411.16331'><img src='https://img.shields.io/badge/Paper-Arxiv-red'></a>
-  <a href="https://huggingface.co/spaces/xiaozhongji/Sonic" style="margin: 0 2px;">
-    <img src='https://img.shields.io/badge/Space-ZeroGPU-orange?style=flat&logo=Gradio&logoColor=red' alt='Demo'>
-    </a>
-  <a href="https://raw.githubusercontent.com/jixiaozhong/Sonic/refs/heads/main/LICENSE" style="margin: 0 2px;">
-    <img src='https://img.shields.io/badge/License-CC BY--NC--SA--4.0-lightgreen?style=flat&logo=Lisence' alt='License'>
-  </a>
-
-<p align="center">
-    👋 Join our <a href="examples/image/QQ.png" target="_blank">QQ Chat Group</a> 
-</p>
-<p align="center">
-
-
-## 🔥🔥🔥 NEWS
-
-**`2025/02/08`**: Many thanks to the open-source community contributors for making the ComfyUI version of Sonic a reality. Your efforts are truly appreciated! [**ComfyUI version of Sonic**](https://github.com/smthemex/ComfyUI_Sonic)
-
-**`2025/02/06`**: Commercialization: Note that our license is **non-commercial**. If commercialization is required, please use Tencent Cloud Video Creation Large Model: [**Introduction**](https://cloud.tencent.com/product/vclm) / [**API documentation**](https://cloud.tencent.com/document/api/1616/109378)
-
-**`2025/01/17`**: Our [**Online huggingface Demo**](https://huggingface.co/spaces/xiaozhongji/Sonic/) is released.
-
-**`2025/01/17`**: Thank you to NewGenAI for promoting our Sonic and creating a Windows-based tutorial on [**YouTube**](https://www.youtube.com/watch?v=KiDDtcvQyS0).
-
-**`2024/12/16`**: Our [**Online Demo**](http://demo.sonic.jixiaozhong.online/) is released.
-
-
 ## 🎥 Demo
 | Input                | Output                | Input                | Output                |
 |----------------------|-----------------------|----------------------|-----------------------|
@@ -48,10 +13,6 @@ If you develop/use Sonic in your projects, welcome to let us know.
 - ComfyUI version of Sonic: [**ComfyUI_Sonic**](https://github.com/smthemex/ComfyUI_Sonic)
 
 
-## 📑 Updates
-**`2025/01/14`**: Our inference code and weights are released. Stay tuned, we will continue to polish the model.
-
-
 ## 📜 Requirements
 * An NVIDIA GPU with CUDA support is required. 
   * The model is tested on a single 32G GPU.
@@ -63,7 +24,7 @@ If you develop/use Sonic in your projects, welcome to let us know.
 
 - install pytorch
 ```shell
-  pip3 install -r requirements.txt
+  pip install -r requirements.txt
 ```
 - All models are stored in `checkpoints` by default, and the file structure is as follows
 ```shell
@@ -92,43 +53,48 @@ Download by `huggingface-cli` follow
 
 or manully download [pretrain model](https://drive.google.com/drive/folders/1oe8VTPUy0-MHHW2a_NJ1F8xL-0VN5G7W?usp=drive_link), [svd-xt](https://huggingface.co/stabilityai/stable-video-diffusion-img2vid-xt) and [whisper-tiny](https://huggingface.co/openai/whisper-tiny) to checkpoints/ 
 
+## 🎬 Inference API
 
-### Run demo
-```shell
-  python3 demo.py \
-  '/path/to/input_image' \
-  '/path/to/input_audio' \
-  '/path/to/output_video'
+### Celery配置
+```
+celery_app.py
+```
+
+### 启动Celery worker：
+```
+celery -A tasks worker --loglevel=info
+```
+
+### 启动FastAPI服务：
+```
+uvicorn main:app --host 0.0.0.0 --port 8000
+```
+
+### 创建视频生成任务：
+```
+curl -X POST "http://localhost:8000/generate_video" \
+-H "Content-Type: application/json" \
+-d '{"image_url":"https://example.com/image.jpg","audio_url":"https://example.com/audio.wav","dynamic_scale":1.0}'
+```
+### 查看视频生成结果：
+```
+curl "http://localhost:8000/task/{task_id}"
 ```
 
 
-
- 
-## 🔗 Citation
-
-If you find our work helpful for your research, please consider citing our work.   
-
-```bibtex
-@article{ji2024sonic,
-  title={Sonic: Shifting Focus to Global Audio Perception in Portrait Animation},
-  author={Ji, Xiaozhong and Hu, Xiaobin and Xu, Zhihong and Zhu, Junwei and Lin, Chuming and He, Qingdong and Zhang, Jiangning and Luo, Donghao and Chen, Yi and Lin, Qin and others},
-  journal={arXiv preprint arXiv:2411.16331},
-  year={2024}
-}
-
-@article{ji2024realtalk,
-  title={Realtalk: Real-time and realistic audio-driven face generation with 3d facial prior-guided identity alignment network},
-  author={Ji, Xiaozhong and Lin, Chuming and Ding, Zhonggan and Tai, Ying and Zhu, Junwei and Hu, Xiaobin and Luo, Donghao and Ge, Yanhao and Wang, Chengjie},
-  journal={arXiv preprint arXiv:2406.18284},
-  year={2024}
-}
+### Supervisord配置
 ```
+[program:sonic_api]
+command=bash -c "cd /data/Sonic && /home/work/data/miniconda3/envs/Sonic/bin/uvicorn main:app --host 0.0.0.0 --port 8005 --reload"
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/supervisor/sonic_api.err.log
+stdout_logfile=/var/log/supervisor/sonic_api.out.log
 
-## 📜 Related Works
-
-Explore our related researches:
--  **[Super-fast talk：real-time and less GPU computation]** [Realtalk: Real-time and realistic audio-driven face generation with 3d facial prior-guided identity alignment network](https://arxiv.org/pdf/2406.18284)
-
-## 📈 Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=jixiaozhong/Sonic&type=Date)](https://star-history.com/#jixiaozhong/Sonic&Date)
+[program:sonic_celery]
+command=bash -c "cd /data/Sonic && /home/work/data/miniconda3/envs/Sonic/bin/celery -A tasks worker --loglevel=info --pool=threads"
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/supervisor/sonic_celery.err.log
+stdout_logfile=/var/log/supervisor/sonic_celery.out.log
+```

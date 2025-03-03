@@ -61,38 +61,11 @@ def process_sonic(image,audio,s0):
     return res_video_path
     
 inputs = [
-    gr.Image(type='pil',label="Upload Image"),
-    gr.Audio(label="Upload Audio"),
-    gr.Slider(0.5, 2.0, value=1.0, step=0.1, label="Dynamic scale", info="Increase/decrease to obtain more/less movements"),
+    gr.Image(type='pil',label="上传人像图片"),
+    gr.Audio(label="上传音频"),
+    gr.Slider(0.5, 2.0, value=1.0, step=0.1, label="动作幅度", info="值越小，动作幅度越小"),
 ]
 outputs = gr.Video(label="output.mp4")
-
-
-html_description = """
-<div style="display: flex; justify-content: center; align-items: center;">
-  <a href="https://github.com/jixiaozhong/Sonic.git" style="margin: 0 2px;">
-    <img src='https://img.shields.io/badge/GitHub-Repo-blue?style=flat&logo=GitHub' alt='GitHub'>
-  </a>
-  <a href="https://arxiv.org/pdf/2411.16331" style="margin: 0 2px;">
-    <img src='https://img.shields.io/badge/arXiv-2411.16331-red?style=flat&logo=arXiv&logoColor=red' alt='arxiv'>
-  </a>
-  <a href='https://jixiaozhong.github.io/Sonic/' style="margin: 0 2px;">
-    <img src='https://img.shields.io/badge/Webpage-Project-silver?style=flat&logo=&logoColor=orange' alt='webpage'>
-  </a>
-  <a href="https://github.com/jixiaozhong/Sonic/blob/main/LICENSE" style="margin: 0 2px;">
-    <img src='https://img.shields.io/badge/License-CC BY--NC--SA--4.0-lightgreen?style=flat&logo=Lisence' alt='License'>
-  </a>
-</div>
-
-The demo can only be used for <b>Non-commercial Use</b>.
-<br>If you like our work, please star <a href='https://jixiaozhong.github.io/Sonic/' style="margin: 0 2px;">Sonic</a>.
-<br>Note: Audio longer than 10s will be truncated due to computing resources.
-"""
-TAIL = """
-<div style="display: flex; justify-content: center; align-items: center;">
-<a href="https://clustrmaps.com/site/1c38t"  title="ClustrMaps"><img src="//www.clustrmaps.com/map_v2.png?d=BI2nzSldyixPC88l8Kev4wjjqsU4IOk7gcvpOijolGI&cl=ffffff" /></a>
-</div>
-"""
 
 def get_example():
     return [
@@ -103,16 +76,14 @@ def get_example():
         
     ]
 
-with gr.Blocks(title="Sonic") as demo:
-    gr.Interface(fn=process_sonic, inputs=inputs, outputs=outputs, title="Sonic: Shifting Focus to Global Audio Perception in Portrait Animation", description=html_description, direction="column")
+css = """footer {visibility: hidden}"""
+with gr.Blocks(title="Sonic", css=css, theme="Kasien/ali_theme_custom") as demo:
+    gr.Interface(fn=process_sonic, inputs=inputs, outputs=outputs, title="Sonic: 一个音频驱动的数字人生成工具", direction="column", allow_flagging='never')
     gr.Examples(
         examples=get_example(),
         fn=process_sonic,
         inputs=inputs,
         outputs=outputs,
         cache_examples=False,)
-    gr.Markdown(TAIL)
     
 demo.launch(server_name='0.0.0.0', server_port=8081, share=True, enable_queue=True)
-
-
